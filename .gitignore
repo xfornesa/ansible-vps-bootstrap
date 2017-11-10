@@ -63,3 +63,7 @@ fabric.properties
 *.iml
 
 .idea/
+
+*.log
+
+example/roles/*
