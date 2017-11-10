@@ -45,7 +45,7 @@ install:
 script:
   # Local Testing Commands
   # Basic role syntax check
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible-playbook tests/test.yml --syntax-check ; fi
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible-playbook tests/test.yml -i tests/inventory --syntax-check ; fi
 
   # Docker Testing Commands
   - if [ "${ANSIBLE_VERSION}" == "docker" ]; then container_id=$(mktemp) ; fi
