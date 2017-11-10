@@ -1,2 +1,5 @@
 ---
 # tasks file for vps-setup
+- include: firewall.yml
+
+- include: users.yml
