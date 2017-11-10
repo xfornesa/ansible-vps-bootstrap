@@ -1,5 +1,13 @@
 ---
 - hosts: localhost
-  remote_user: root
+  become: True
+
+  vars:
+    - debug: yes
+    - user_name: user_test
+    - user_group: "{{ user_name }}"
+    - user_home: "/home/{{ user_name }}"
+    - user_ssh_pub_file: "./files/{{ user_name }}.pub"
+
   roles:
     - vps-setup

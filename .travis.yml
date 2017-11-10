@@ -2,6 +2,9 @@
 language: python
 python: "2.7"
 
+services:
+  - docker
+
 cache: pip
 
 branches:
@@ -13,6 +16,11 @@ sudo: false
 
 env:
   - ANSIBLE_VERSION: "2.4.1.0"
+  - distribution: Ubuntu
+    distribution_version: xenial
+    init: /lib/systemd/systemd
+    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+    ANSIBLE_VERSION: docker
 
 # Install ansible
 addons:
@@ -20,19 +28,32 @@ addons:
     packages:
     - python-pip
 
+before_install:
+  # Pull container.
+  - if [ "${ANSIBLE_VERSION}" == "docker" ]; 'docker pull ansiblecheck/ansiblecheck:${distribution,,}-${distribution_version}' ; fi
+
 install:
+  # Standard Local Testing Commands
   # Install ansible
-  - pip install ansible==$ANSIBLE_VERSION
-
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then pip install ansible==$ANSIBLE_VERSION ; fi
   # Check ansible version
-  - ansible --version
-
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible --version ; fi
   # Create ansible.cfg with correct roles_path
-  - printf '[defaults]\nroles_path=../' >ansible.cfg
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then printf '[defaults]\nroles_path=../' >ansible.cfg ; fi
 
 script:
+  # Local Testing Commands
   # Basic role syntax check
-  - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; ansible-playbook tests/test.yml -i tests/inventory --syntax-check ; fi
+
+  # Docker Testing Commands
+  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then container_id=$(mktemp) ; fi
+  # Start The Built Container In The Background
+  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker run --detach --volume="${PWD}":/etc/ansible/roles/role_under_test:ro ${run_opts} ansiblecheck/ansiblecheck:"${distribution,,}"-"${distribution_version}" "${init}" > "${container_id}" ; fi
+  # Ansible syntax check.
+  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/role_under_test/tests/main.yml --syntax-check ; fi
+  # Test role.
+  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker exec "$(cat ${container_id})" ansible-playbook /etc/ansible/roles/role_under_test/tests/main.yml  -i /etc/ansible/roles/role_under_test/tests/inventory -v ; fi
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
