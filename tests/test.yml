@@ -9,5 +9,15 @@
     - user_home: "/home/{{ user_name }}"
     - user_ssh_pub_file: "./files/{{ user_name }}.pub"
 
+  pre_tasks:
+    - name: Update apt cache.
+      command: apt -y update
+      when: ansible_os_family == 'Debian'
+
+  tasks:
+    - name: Check Ansible Is Installed
+      changed_when: False
+      command: /usr/bin/env ansible --version
+
   roles:
     - vps-setup
