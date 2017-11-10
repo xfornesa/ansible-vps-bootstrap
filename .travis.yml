@@ -30,7 +30,8 @@ addons:
 
 before_install:
   # Pull container.
-  - if [ "${ANSIBLE_VERSION}" == "docker" ]; 'docker pull ansiblecheck/ansiblecheck:${distribution,,}-${distribution_version}' ; fi
+  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker pull ansiblecheck/ansiblecheck:${distribution,,}-${distribution_version} ; fi
+
 
 install:
   # Standard Local Testing Commands
@@ -44,7 +45,7 @@ install:
 script:
   # Local Testing Commands
   # Basic role syntax check
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; ansible-playbook tests/test.yml -i tests/inventory --syntax-check ; fi
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible-playbook tests/test.yml -i tests/inventory --syntax-check ; fi
 
   # Docker Testing Commands
   - if [ "${ANSIBLE_VERSION}" == "docker" ]; then container_id=$(mktemp) ; fi
