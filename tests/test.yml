@@ -13,10 +13,15 @@
       command: apt -y update
       when: ansible_os_family == 'Debian'
 
-    - name: Install ansible
+    - name: Install python pip
       apt:
-        package: ansible=2.4.1.0
+        package: python-pip
         state: present
+
+    - name: Install ansible
+      pip:
+        name: ansible
+        version: 2.4.1.0
 
     - name: Check Ansible Is Installed
       changed_when: False
