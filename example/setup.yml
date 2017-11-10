@@ -1,0 +1,5 @@
+---
+- name: Setup vagrant server
+  hosts: all
+  roles:
+    - { role: xfornesa.vps-setup }
