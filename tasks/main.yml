@@ -1,5 +1,5 @@
 ---
 # tasks file for vps-setup
-- import_tasks: firewall.yml
+- include: firewall.yml
 
-- import_tasks: users.yml
+- include: users.yml
