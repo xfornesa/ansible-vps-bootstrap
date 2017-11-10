@@ -13,6 +13,11 @@
       command: apt -y update
       when: ansible_os_family == 'Debian'
 
+    - name: Install ansible
+      apt:
+        package: ansible=2.4.1.0
+        state: present
+
     - name: Check Ansible Is Installed
       changed_when: False
       command: /usr/bin/env ansible --version
