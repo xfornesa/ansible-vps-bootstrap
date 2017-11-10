@@ -1,7 +1,10 @@
-ansible-vps-setup
+---
+# defaults file for vps-setup
+
+Role Name
 =========
 
-Ansible role for setup your VPS ,like Digital Ocean, the first time
+A brief description of the role goes here.
 
 Requirements
 ------------
